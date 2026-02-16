@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "scripts": {
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
