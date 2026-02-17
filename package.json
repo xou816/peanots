@@ -1,9 +1,17 @@
 {
   "type": "module",
   "scripts": {
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "watch-experimental": "tsgo -w",
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260216.1",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsd": "^0.33.0",
     "typescript": "^5.9.3"
   }
 }
