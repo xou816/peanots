@@ -1,6 +1,6 @@
 # peanots
 
-Type-level natural integers powering advanced types. Inspired by Rust's `const` generics.
+(EXPERIMENTAL!) Type-level natural integers powering advanced types. Inspired by Rust's `const` generics.
 
 ## `SizedArray`
 
