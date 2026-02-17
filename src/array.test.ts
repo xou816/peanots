@@ -1,5 +1,5 @@
 import { SizedArray } from "./array"
-import { int, type Equal, type Int, type Range } from "./integers"
+import { int, type AsNumber, type Equal, type Int, type Range } from "./integers"
 
 function typeAssert<T extends true>() { }
 
@@ -58,6 +58,10 @@ describe("SizedArray", () => {
 
         expect(slice.length).toBe(3)
         typeAssert<Equal<3, typeof slice.length>>()
+
+        const slice2 = arr.slice(int(2), int(3))
+        expect(slice2.length).toBe(1)
+        typeAssert<Equal<1, typeof slice2.length>>()
     })
 
     it("should work with ranges too", () => {

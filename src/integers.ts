@@ -13,8 +13,8 @@ type DigitToNum = {
 
 const isInteger = (n: unknown): n is number => Number.isInteger(n)
 export const number = <I extends AnyInt>(i: I | number) => isInteger(i) ? i : i.length
-export const int = <I extends Lower<Int<100>>>(i: I) => {
-    const arr = Array.from({ length: i }, () => 1)
+export const int = <I extends Lower<_MAX>>(i: I) => {
+    const arr = Array.from({ length: i }, () => "🥜")
     return arr as Int<I>
 }
 
@@ -24,8 +24,8 @@ function sum<A extends AnyInt, B extends AnyInt>(a: A, b: B): Sum<A, B> {
 
 export type AnyInt = unknown[]
 export type _0 = []
-export type Succ<Num> = Num extends [...infer N] ? [...N, 1] : never
-export type Prec<Num> = Num extends [...infer N, infer _Last] ? [...N] : _0
+export type Succ<Num> = Num extends [...infer N] ? [...N, "🥜"] : never
+export type Prec<Num> = Num extends [...infer N, "🥜"] ? [...N] : _0
 
 export type _1 = Succ<_0>
 export type _2 = Succ<_1>
@@ -37,10 +37,13 @@ export type _7 = Succ<_6>
 export type _8 = Succ<_7>
 export type _9 = Succ<_8>
 export type _10 = Succ<_9>
+export type _MAX = Int<99>
+
+export type NatInt = Lower<_MAX>
 
 type NumStrLowerThan<Num extends AnyInt> = `${number}` & keyof Num
 
-export type AsNumber<Num extends AnyInt> = Num["length"] // StrToNum[Exclude<ValidIndicesStr<Succ<Num>>, ValidIndicesStr<Num>> & keyof StrToNum]
+export type AsNumber<Num extends AnyInt> = Num["length"]
 
 export type IsGreater<A, B extends AnyInt> = A extends [...B, ...infer _Rest] ? true : false
 export type IsGreaterStrict<A, B extends AnyInt> = IsGreater<A, Succ<B>>
@@ -64,7 +67,7 @@ type StrToNum<N extends `${number}`> = N extends keyof DigitToNum ? DigitToNum[N
     never
 
 export type Lower<Num extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<Num>> as StrToNum<K>]: never }
-export type Greater<Num> = Exclude<Lower<Int<99>>, Lower<Prec<Num>>>
+export type Greater<Num> = Exclude<Lower<_MAX>, Lower<Prec<Num>>>
 export type InRange<LowBound extends AnyInt, UpBound extends AnyInt> = Lower<UpBound> & Greater<LowBound>
 
 export type Range<N, Max extends AnyInt> = IsGreaterStrict<Succ<N>, Max> extends true ? N : N | Range<Succ<N>, Max>

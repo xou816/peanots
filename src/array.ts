@@ -19,11 +19,9 @@ export class SizedArray<T, N extends AnyInt> {
     }
 
     slice<I extends Range<_0, Prec<N>>>(start: I): SizedArray<T, Diff<N, I>>;
-    // slice(start: number): Array<T>;
-    slice<I extends Range<_0, Prec<N>>>(start: I | number): Array<T> | SizedArray<T, AnyInt> {
-        return number(start) === start ?
-            [...this.#arr.slice(number(start))] :
-            new SizedArray(...this.#arr.slice(number(start)))
+    slice<S extends Range<_0, Prec<N>>, E extends Range<_0, Prec<N>>>(start: S, end: E): SizedArray<T, Diff<E, S>>;
+    slice<S extends Range<_0, Prec<N>>, E extends Range<_0, Prec<N>>>(start: S, end?: E): SizedArray<T, AnyInt> {
+        return new SizedArray(...this.#arr.slice(number(start), end !== undefined ? number(end) : undefined))
     }
 
     concat<M extends AnyInt>(other: SizedArray<T, M>): SizedArray<T, Sum<N, M>>;
