@@ -1,6 +1,6 @@
 # peanots 🥜
 
-(EXPERIMENTAL! MADE FOR FUN!) Type-level *natural* integers powering advanced types. Inspired by Rust's `const` generics.
+(EXPERIMENTAL! MADE FOR FUN!) Type-level natural integers powering advanced types. Inspired by Rust's `const` generics.
 
 There are currently technical limitations that prevent some things from working with integers above 99.
 
@@ -48,17 +48,19 @@ The following types represent type-level natural integers.
 
 * `AnyInt` is the type of all type-level natural integers
 * `Int<1>` is the type-level natural integer representing 1
-* `Succ<T>`, `Prec<T>` are respectively the integers coming before and after T
-* `Sum<A, B>` is the type that represents the sum of integers A and B; similarly, `Diff` is for substraction and `Mul` for multiplication
-* `Range<A, B>` is the type that represents all integers from A to B: `A | Succ<A> | Succ<Succ<A>> | ... | Prec<B>, B`
+* `Succ<T>`, `Prec<T>` are respectively the integers coming after and before `T`
+* `Sum<A, B>` is the type that represents the sum of integers `A` and `B`; similarly, `Diff` is for substraction and `Mul` for multiplication
+* `Range<A, B>` is the type that represents all integers from `A` to `B`: `A | Succ<A> | Succ<Succ<A>> | ... | Prec<B> | B`
 
 The chosen representation 🥜🥜🥜 should not be taken for granted. These integers should be treated as opaque types.
 
 The following types narrow the number type.
 
-* `AsNumber<T>` is the narrowed type of a `number` that matches the integer T, e.g. `AsNumber<Int<1>>` is the type `1`
-* `Lower<T>` are numbers that are also valid integers lower than T, e.g. `Lower<Int<3>>` is the type `0 | 1 | 2 | 3`; `Greater<T>` is the opposite, up to 99 (technical limitation)
+* `AsNumber<T>` is the narrowed type of a `number` that matches the integer `T`, e.g. `AsNumber<Int<1>>` is the type `1`
+* `Lower<T>` are numbers that are also valid integers lower than `T`, e.g. `Lower<Int<3>>` is the type `0 | 1 | 2 | 3`
 * `InRange<A, B>` is a combination of the two
+* `Natural<n>` checks that `n` is a natural integer and a `number`, e.g. `Natural<1>` is equivalent to `1`, but `Natural<-1.5>` is `never`
+* `GreaterThan<T, n>` checks that `n` is a natural integer and a `number` and greater than `T`, e.g. `GreaterThan<Int<2>, 3>` is equivalent to `3` but `GreaterThan<Int<2>, 1>` is `never`
 
 Sometimes, a method calls for a type-level integer value (because type inference has limits), i.e. a constant integer. It only makes sense to use constant expressions to create a type-level integer value.
 

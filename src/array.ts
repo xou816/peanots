@@ -1,4 +1,4 @@
-import { type Int, type AsNumber, type AnyInt, type Lower, type Succ, type Sum, type Prec, type Diff, type IsGreaterStrict, type Range, type _0, int, number, type Greater } from "./integers"
+import { type Int, type AsNumber, type AnyInt, type Lower, type Succ, type Sum, type Prec, type Diff, type IsGreaterStrict, type Range, type _0, number, type GreaterThan } from "./integers"
 
 export class SizedArray<T, N extends AnyInt> {
     readonly #arr: T[]
@@ -13,7 +13,7 @@ export class SizedArray<T, N extends AnyInt> {
 
     at<I extends Range<_0, Prec<N>>>(i: I): T;
     at(i: Lower<Prec<N>>): T;
-    at(i: Greater<N>): T | undefined;
+    at<I extends number>(i: I & GreaterThan<T, I>): T | undefined;
     at(i: Lower<Prec<N>> | AnyInt | number): T | undefined {
         return this.#arr.at(number(i))
     }

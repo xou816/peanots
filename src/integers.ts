@@ -1,14 +1,20 @@
-type DigitToNum = {
-    "0": 0,
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5,
-    "6": 6,
-    "7": 7,
-    "8": 8,
-    "9": 9
+type DigitToInt = {
+    "0": _0,
+    "1": _1,
+    "2": _2,
+    "3": _3,
+    "4": _4,
+    "5": _5,
+    "6": _6,
+    "7": _7,
+    "8": _8,
+    "9": _9,
+    "a": _10,
+    "b": Int<11>,
+    "c": Int<12>,
+    "d": Int<13>,
+    "e": Int<14>,
+    "f": Int<15>
 }
 
 const isInteger = (n: unknown): n is number => Number.isInteger(n)
@@ -16,10 +22,6 @@ export const number = <I extends AnyInt>(i: I | number) => isInteger(i) ? i : i.
 export const int = <I extends Lower<_MAX>>(i: I) => {
     const arr = Array.from({ length: i }, () => "🥜")
     return arr as Int<I>
-}
-
-function sum<A extends AnyInt, B extends AnyInt>(a: A, b: B): Sum<A, B> {
-    return a.concat(...b) as Sum<A, B>
 }
 
 export type AnyInt = unknown[]
@@ -37,9 +39,8 @@ export type _7 = Succ<_6>
 export type _8 = Succ<_7>
 export type _9 = Succ<_8>
 export type _10 = Succ<_9>
-export type _MAX = Int<99>
-
-export type NatInt = Lower<_MAX>
+export type _100 = Mul<_10, _10>
+export type _MAX = _100
 
 type NumStrLowerThan<Num extends AnyInt> = `${number}` & keyof Num
 
@@ -55,26 +56,42 @@ export type Sum<A, B> = IsGreaterStrict<B, _1> extends true ?
     IsGreaterStrict<B, _0> extends true ?
     Succ<A> : A
 
-type Mul<A, B> = IsGreaterStrict<B, _1> extends true ?
+export type Mul<A, B> = IsGreaterStrict<B, _1> extends true ?
     Sum<Mul<A, Prec<B>>, A> :
     IsGreaterStrict<B, _0> extends true ?
     A : _0
 
-export type Int<N extends number, _Start extends AnyInt = _0> = N extends AsNumber<_Start> ? _Start : Int<N, Succ<_Start>>
+export type Int<n extends number, _Start extends AnyInt = _0> = n extends AsNumber<_Start> ? _Start :
+    IsGreater<_Start, _100> extends true ? never : Int<n, Succ<_Start>>
 
-type StrToNum<N extends `${number}`> = N extends keyof DigitToNum ? DigitToNum[N] :
-    N extends `${infer A extends 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${infer D extends keyof DigitToNum}` ? AsNumber<Sum<Mul<_10, Int<A>>, Int<DigitToNum[D]>>> :
+
+type StrToInt<N extends string, _Base = Int<10>, _Acc = _0> = N extends keyof DigitToInt ? Sum<Mul<_Base, _Acc>, DigitToInt[N]> :
+    N extends `${infer D extends keyof DigitToInt}${infer Rest extends string}` ? StrToInt<Rest, _Base, Sum<Mul<_Base, _Acc>, DigitToInt[D]>> :
     never
 
-export type Lower<Num extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<Num>> as StrToNum<K>]: never }
-export type Greater<Num> = Exclude<Lower<_MAX>, Lower<Prec<Num>>>
-export type InRange<LowBound extends AnyInt, UpBound extends AnyInt> = Lower<UpBound> & Greater<LowBound>
+type Hmmm = AsNumber<StrToInt<"1a4", Int<16>>>
 
-export type Range<N, Max extends AnyInt> = IsGreaterStrict<Succ<N>, Max> extends true ? N : N | Range<Succ<N>, Max>
+type StrToNum<N extends `${number}`> = AsNumber<StrToInt<N>>
+
+export type Lower<Num extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<Num>> as StrToNum<K>]: never }
+export type _Greater<Num> = Exclude<Lower<_MAX>, Lower<Prec<Num>>>
+export type GreaterThan<Num, n extends number> = n extends Lower<Prec<Num>> ? never : n & Natural<n>
+
+
+export type InRange<LowBound extends AnyInt, UpBound extends AnyInt> = Lower<UpBound> & _Greater<LowBound>
+
+export type Range<LowerBound, UpperBound extends AnyInt> = IsGreaterStrict<Succ<LowerBound>, UpperBound> extends true ? LowerBound : LowerBound | Range<Succ<LowerBound>, UpperBound>
 
 export type Diff<A, B extends AnyInt> = IsGreaterStrict<B, _0> extends true ?
     Prec<Diff<A, Prec<B>>> :
     A
+
+type IsNaturalInt<n extends number | `${number}`> = `${n}` extends `${infer _N extends 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${infer Rest extends string}` ?
+    Rest extends "" ? true :
+    Rest extends `${number}` ? IsNaturalInt<Rest> :
+    false : false
+
+export type Natural<n extends number> = IsNaturalInt<n> extends true ? n : never
 
 // Unit tests
 
@@ -88,10 +105,11 @@ const _2NotGreaterThan2: IsGreaterStrict<_2, _2> = false;
 
 const _6Minus4Is2: Equal<_2, Diff<_6, _4>> = true;
 
-const parseNum: Equal<42, StrToNum<"42">> = true;
+const parseNum: Equal<420, StrToNum<"420">> = true;
 
 const lowerThan3: Lower<Int<3>> = 2;
-const higherThan3: Greater<Int<3>> = 3;
+const higherThan3: _Greater<Int<3>> = 99;
+const higherThan3_Better: GreaterThan<Int<2>, 54546465> = 54546465
 const inRange: InRange<Int<9>, Int<10>> = 10;
 
 const isInRange: _2 extends Range<_1, _5> ? true : false = true

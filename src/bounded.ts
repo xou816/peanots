@@ -1,4 +1,4 @@
-import { number, type _0, type _MAX, type AnyInt, type AsNumber, type Diff, type Greater, type InRange, type Int, type Lower, type NatInt, type Succ, type Sum } from "./integers";
+import { number, type _0, type _MAX, type AnyInt, type AsNumber, type Diff, type InRange, type Int, type Lower, type Succ, type Sum, type Natural, type GreaterThan } from "./integers";
 
 export class BoundedInt<L extends AnyInt, U extends AnyInt> {
     readonly #value: InRange<L, U>
@@ -20,7 +20,7 @@ export class BoundedInt<L extends AnyInt, U extends AnyInt> {
     }
 
     greaterThan(other: Lower<L>): true;
-    greaterThan(other: Greater<Succ<U>>): false;
+    greaterThan<N extends number>(other: N & GreaterThan<Succ<U>, N>): false;
     greaterThan(other: number): boolean;
     greaterThan(other: number): boolean {
         return this.#value >= other
@@ -58,9 +58,8 @@ export class BoundedInt<L extends AnyInt, U extends AnyInt> {
         return new BoundedInt(v as never, [min, max])
     }
 
-    addSaturating(other: NatInt): BoundedInt<L, U>;
-    addSaturating(other: number): BoundedInt<L, U> | never;
-    addSaturating(other: number): BoundedInt<L, U> | never {
+    addSaturating<N extends number>(other: N & Natural<N>): BoundedInt<L, U>;
+    addSaturating(other: number): BoundedInt<L, U> {
         if (!Number.isInteger(other) || other < 0) {
             throw `Unexpected number ${other}, expected a natural integer`
         }
@@ -68,9 +67,8 @@ export class BoundedInt<L extends AnyInt, U extends AnyInt> {
         return new BoundedInt(v as any, [this.#min, this.#max])
     }
 
-    addOverflowing(other: NatInt): BoundedInt<L, U>;
-    addOverflowing(other: number): BoundedInt<L, U> | never;
-    addOverflowing(other: number): BoundedInt<L, U> | never {
+    addOverflowing<N extends number>(other: N & Natural<N>): BoundedInt<L, U>;
+    addOverflowing(other: number): BoundedInt<L, U> {
         if (!Number.isInteger(other) || other < 0) {
             throw `Unexpected number ${other}, expected a natural integer`
         }

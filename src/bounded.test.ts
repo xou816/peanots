@@ -20,7 +20,7 @@ describe("BoundedInt", () => {
         const a = _(5)
 
         const isGreaterThan4: true = a.greaterThan(4)
-        const isGreaterThan9: false = a.greaterThan(9)
+        const isGreaterThanBigNum: false = a.greaterThan(4564545645644)
     })
 
     it("should support addition", () => {
@@ -43,12 +43,10 @@ describe("BoundedInt", () => {
     it("should support saturating addition", () => {
         const a = _(6)
 
-        const b = a.addSaturating(10)
+        const b = a.addSaturating(1234567890)
 
         typeAssert<Equal<typeof a, typeof b>>()
         expect(+b).toBe(8)
-
-        expect(() => a.addSaturating(1.5)).toThrow()
     })
 
     it("should support overflowing addition", () => {
@@ -61,7 +59,5 @@ describe("BoundedInt", () => {
         expect(+a.addOverflowing(2)).toBe(8)
         expect(+a.addOverflowing(3)).toBe(4)
         expect(+a.addOverflowing(4)).toBe(5)
-        
-        expect(() => a.addOverflowing(1.5)).toThrow()
     })
 })

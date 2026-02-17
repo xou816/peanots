@@ -29,7 +29,7 @@ describe("SizedArray", () => {
     it("should make item access safe", () => {
         const arr: SizedArray<string, Int<2>> = new SizedArray("a", "b")
 
-        const outOfBounds: string | undefined = arr.at(2)
+        const outOfBounds: string | undefined = arr.at(2564654654)
         const inBounds: string = arr.at(1)
     })
 
