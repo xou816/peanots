@@ -1,4 +1,4 @@
-import { type Int, type AsNumber, type AnyInt, type Lower, type Succ, type Sum, type Prec, type Diff, type IsGreaterStrict, type Range, type _0, number, type GreaterThan } from "./integers"
+import { type Int, type AsNumber, type AnyInt, type Succ, type Sum, type Prec, type Diff, type IsGreaterStrict, type Range, type _0, number, type GreaterThan, type LowerThan } from "./integers"
 
 export class SizedArray<T, N extends AnyInt> {
     readonly #arr: T[]
@@ -12,15 +12,15 @@ export class SizedArray<T, N extends AnyInt> {
     }
 
     at<I extends Range<_0, Prec<N>>>(i: I): T;
-    at(i: Lower<Prec<N>>): T;
+    at<I extends number>(i: LowerThan<Prec<N>, I>): T;
     at<I extends number>(i: I & GreaterThan<T, I>): T | undefined;
-    at(i: Lower<Prec<N>> | AnyInt | number): T | undefined {
+    at(i: AnyInt | number): T | undefined {
         return this.#arr.at(number(i))
     }
 
-    slice<I extends Range<_0, Prec<N>>>(start: I): SizedArray<T, Diff<N, I>>;
+    slice<S extends Range<_0, Prec<N>>>(start: S): SizedArray<T, Diff<N, S>>;
     slice<S extends Range<_0, Prec<N>>, E extends Range<_0, Prec<N>>>(start: S, end: E): SizedArray<T, Diff<E, S>>;
-    slice<S extends Range<_0, Prec<N>>, E extends Range<_0, Prec<N>>>(start: S, end?: E): SizedArray<T, AnyInt> {
+    slice<S extends AnyInt, E extends AnyInt>(start: S, end?: E): SizedArray<T, AnyInt> {
         return new SizedArray(...this.#arr.slice(number(start), end !== undefined ? number(end) : undefined))
     }
 

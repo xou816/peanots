@@ -2,7 +2,15 @@
 
 (EXPERIMENTAL! MADE FOR FUN!) Type-level natural integers powering advanced types. Inspired by Rust's `const` generics.
 
-There are currently technical limitations that prevent some things from working with integers above 99.
+## Disclaimer ⚠️
+
+Code built from this repository may contain traces of peanuts.
+
+Please be advised that the use of this library may incur the following side effects:
+- mystifying errors traces;
+- undefined behavior when using integers above 0x55f;
+- increased transpilation times;
+- distrust or even anger from coworkers.
 
 # Data structures
 
@@ -57,16 +65,16 @@ The chosen representation 🥜🥜🥜 should not be taken for granted. These in
 The following types narrow the number type.
 
 * `AsNumber<T>` is the narrowed type of a `number` that matches the integer `T`, e.g. `AsNumber<Int<1>>` is the type `1`
-* `Lower<T>` are numbers that are also valid integers lower than `T`, e.g. `Lower<Int<3>>` is the type `0 | 1 | 2 | 3`
-* `InRange<A, B>` is a combination of the two
 * `Natural<n>` checks that `n` is a natural integer and a `number`, e.g. `Natural<1>` is equivalent to `1`, but `Natural<-1.5>` is `never`
+* `LowerThan<T, n>` checks that `n` is a natural integer and lower than `T`, e.g. `Lower<Int<3>, 2>` is the type `2` but `Lower<Int<3>, 4>` is `never`
 * `GreaterThan<T, n>` checks that `n` is a natural integer and a `number` and greater than `T`, e.g. `GreaterThan<Int<2>, 3>` is equivalent to `3` but `GreaterThan<Int<2>, 1>` is `never`
+* `InRange<A, B>` is a combination of `LowerThan` and `GreaterThan`
 
 Sometimes, a method calls for a type-level integer value (because type inference has limits), i.e. a constant integer. It only makes sense to use constant expressions to create a type-level integer value.
 
 ```ts
 const a: Int<2> = int(2)
-const a: Int<2> = int(1 + 1) // ❌ Argument of type 'number' is not assignable to parameter of type 'Lower<...>'
+const a: Int<2> = int(1 + 1) // ❌ Argument of type 'number' is not assignable to parameter of type <redacted>
 ```
 
 The value of that integer can be read back with `number`.

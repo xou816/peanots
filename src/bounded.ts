@@ -1,4 +1,4 @@
-import { number, type _0, type _MAX, type AnyInt, type AsNumber, type Diff, type InRange, type Int, type Lower, type Succ, type Sum, type Natural, type GreaterThan } from "./integers";
+import { number, type _0, type _MAX, type AnyInt, type AsNumber, type Diff, type InRange, type Int, type LowerThan, type Succ, type Sum, type Natural, type GreaterThan, type IntLowerThan, type IntGreaterThan } from "./integers";
 
 export class BoundedInt<L extends AnyInt, U extends AnyInt> {
     readonly #value: InRange<L, U>
@@ -19,11 +19,18 @@ export class BoundedInt<L extends AnyInt, U extends AnyInt> {
         return this.#value
     }
 
-    greaterThan(other: Lower<L>): true;
-    greaterThan<N extends number>(other: N & GreaterThan<Succ<U>, N>): false;
+    greaterThan<N extends number>(other: LowerThan<L, N>): true;
+    greaterThan<N extends number>(other: GreaterThan<Succ<U>, N>): false;
+    greaterThan<L2 extends AnyInt, U2 extends AnyInt>(other: BoundedInt<L2, IntLowerThan<L, U2>>): true;
+    greaterThan<L2 extends AnyInt, U2 extends AnyInt>(other: BoundedInt<IntGreaterThan<Succ<U>, L2>, U2>): false;
+    greaterThan<L2 extends AnyInt, U2 extends AnyInt>(other: BoundedInt<L2, U2>): boolean;
     greaterThan(other: number): boolean;
-    greaterThan(other: number): boolean {
-        return this.#value >= other
+    greaterThan<L2 extends AnyInt, U2 extends AnyInt>(other: BoundedInt<L2, U2> | number): boolean {
+        if (other instanceof BoundedInt) {
+            return this.#value >= other.#value
+        } else {
+            return this.#value >= other
+        }
     }
 
     add<I extends AnyInt>(other: I): BoundedInt<Sum<L, I>, Sum<U, I>>;
@@ -44,7 +51,7 @@ export class BoundedInt<L extends AnyInt, U extends AnyInt> {
 
     sub<I extends AnyInt>(other: I): BoundedInt<Diff<L, I>, Diff<U, I>>;
     sub<L2 extends AnyInt, U2 extends AnyInt>(other: BoundedInt<L2, U2>): BoundedInt<Diff<L, U2>, Diff<U, L2>>;
-    sub(other: BoundedInt<AnyInt, AnyInt> | AnyInt | number): BoundedInt<AnyInt, AnyInt> {
+    sub(other: BoundedInt<AnyInt, AnyInt> | AnyInt): BoundedInt<AnyInt, AnyInt> {
         let v: number, min: number, max: number;
         if (other instanceof BoundedInt) {
             v = Math.max(0, this.#value - other.#value)

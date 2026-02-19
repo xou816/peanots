@@ -21,6 +21,10 @@ describe("BoundedInt", () => {
 
         const isGreaterThan4: true = a.greaterThan(4)
         const isGreaterThanBigNum: false = a.greaterThan(4564545645644)
+
+        const isGreaterThanOther: true = a.greaterThan(BoundedInt.range(0, 2)(1))
+        const isNotGreaterThanOther: false = a.greaterThan(BoundedInt.range(9, 11)(9))
+        const unknownWhenOverlap: boolean = a.greaterThan(BoundedInt.range(7, 11)(7))
     })
 
     it("should support addition", () => {
@@ -34,8 +38,11 @@ describe("BoundedInt", () => {
     it("should support substraction", () => {
         const a = _(6)
 
-        const b: 2 | 3 | 4 | 5 | 6 = a.sub(int(2)).value
+        // substracting a known value
+        const b: 0 | 1 = a.sub(int(7)).value
+        expect(b).toBe(0)
 
+        // substracting a value in a known range
         const c: 0 | 1 | 2 | 3 | 4 = a.sub(_(7)).value
         expect(c).toBe(0)
     })

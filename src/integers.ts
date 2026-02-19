@@ -19,15 +19,15 @@ type DigitToInt = {
 
 const isInteger = (n: unknown): n is number => Number.isInteger(n)
 export const number = <I extends AnyInt>(i: I | number) => isInteger(i) ? i : i.length
-export const int = <I extends Lower<_MAX>>(i: I) => {
+export const int = <I extends _Lower<_MAX>>(i: I) => {
     const arr = Array.from({ length: i }, () => "🥜")
     return arr as Int<I>
 }
 
 export type AnyInt = unknown[]
 export type _0 = []
-export type Succ<Num> = Num extends [...infer N] ? [...N, "🥜"] : never
-export type Prec<Num> = Num extends [...infer N, "🥜"] ? [...N] : _0
+export type Succ<I> = I extends [...infer N] ? [...N, "🥜"] : never
+export type Prec<I> = I extends [...infer N, "🥜"] ? [...N] : _0
 
 export type _1 = Succ<_0>
 export type _2 = Succ<_1>
@@ -39,12 +39,11 @@ export type _7 = Succ<_6>
 export type _8 = Succ<_7>
 export type _9 = Succ<_8>
 export type _10 = Succ<_9>
-export type _100 = Mul<_10, _10>
-export type _MAX = _100
+export type _MAX = StrToInt<"55f", Int<16>>
 
-type NumStrLowerThan<Num extends AnyInt> = `${number}` & keyof Num
+type NumStrLowerThan<I extends AnyInt> = `${number}` & keyof I
 
-export type AsNumber<Num extends AnyInt> = Num["length"]
+export type AsNumber<I extends AnyInt> = I["length"]
 
 export type IsGreater<A, B extends AnyInt> = A extends [...B, ...infer _Rest] ? true : false
 export type IsGreaterStrict<A, B extends AnyInt> = IsGreater<A, Succ<B>>
@@ -61,24 +60,30 @@ export type Mul<A, B> = IsGreaterStrict<B, _1> extends true ?
     IsGreaterStrict<B, _0> extends true ?
     A : _0
 
-export type Int<n extends number, _Start extends AnyInt = _0> = n extends AsNumber<_Start> ? _Start :
-    IsGreater<_Start, _100> extends true ? never : Int<n, Succ<_Start>>
+export type Int<n extends number> = StrToInt<`${n}`>
 
-
-type StrToInt<N extends string, _Base = Int<10>, _Acc = _0> = N extends keyof DigitToInt ? Sum<Mul<_Base, _Acc>, DigitToInt[N]> :
+type StrToInt<N extends string, _Base = _10, _Acc = _0> = N extends keyof DigitToInt ? Sum<Mul<_Base, _Acc>, DigitToInt[N]> :
     N extends `${infer D extends keyof DigitToInt}${infer Rest extends string}` ? StrToInt<Rest, _Base, Sum<Mul<_Base, _Acc>, DigitToInt[D]>> :
     never
 
-type Hmmm = AsNumber<StrToInt<"1a4", Int<16>>>
 
 type StrToNum<N extends `${number}`> = AsNumber<StrToInt<N>>
 
-export type Lower<Num extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<Num>> as StrToNum<K>]: never }
-export type _Greater<Num> = Exclude<Lower<_MAX>, Lower<Prec<Num>>>
-export type GreaterThan<Num, n extends number> = n extends Lower<Prec<Num>> ? never : n & Natural<n>
+type _Lower<I extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<I>> as StrToNum<K>]: never }
+
+export type IntLowerThan<Max, I extends AnyInt> = IsGreater<Max, I> extends true ? I : never
+export type IntGreaterThan<Min extends AnyInt, I> = IsGreater<I, Min> extends true ? I : never
+
+export type InRange<LowBound extends AnyInt, UpBound extends AnyInt> = number & keyof { [K in NumStrLowerThan<Succ<UpBound>> as K extends NumStrLowerThan<IntLowerThan<UpBound, LowBound>> ? never : StrToNum<K>]: never }
 
 
-export type InRange<LowBound extends AnyInt, UpBound extends AnyInt> = Lower<UpBound> & _Greater<LowBound>
+export type LowerThan<I, n extends number> = n & keyof { [K in NumStrLowerThan<Succ<I>> as StrToNum<K>]: never }
+export type GreaterThan<I, n extends number> = n extends _Lower<Prec<I>> ? never : n & Natural<n>
+
+
+type _Greater<I> = Exclude<_Lower<_MAX>, _Lower<Prec<I>>>
+export type _InRangeFast<LowBound extends AnyInt, UpBound extends AnyInt> = _Lower<UpBound> & _Greater<LowBound>
+
 
 export type Range<LowerBound, UpperBound extends AnyInt> = IsGreaterStrict<Succ<LowerBound>, UpperBound> extends true ? LowerBound : LowerBound | Range<Succ<LowerBound>, UpperBound>
 
@@ -107,9 +112,11 @@ const _6Minus4Is2: Equal<_2, Diff<_6, _4>> = true;
 
 const parseNum: Equal<420, StrToNum<"420">> = true;
 
-const lowerThan3: Lower<Int<3>> = 2;
-const higherThan3: _Greater<Int<3>> = 99;
+const lowerThan3: _Lower<Int<3>> = 2;
+// const higherThan3: _Greater<Int<3>> = 99;
 const higherThan3_Better: GreaterThan<Int<2>, 54546465> = 54546465
-const inRange: InRange<Int<9>, Int<10>> = 10;
+const inRange: _InRangeFast<Int<9>, Int<10>> = 10;
 
 const isInRange: _2 extends Range<_1, _5> ? true : false = true
+
+type Hmmm = AsNumber<StrToInt<"1a4", Int<16>>>
